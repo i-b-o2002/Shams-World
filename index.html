@@ -1,0 +1,1379 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#050713">
+<title>إلى شمس ✨</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap');
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    -webkit-tap-highlight-color:transparent;
+}
+
+html,body{
+    width:100%;
+    height:100%;
+    overflow:hidden;
+}
+
+body{
+    font-family:'Cairo',sans-serif;
+    background:#050713;
+    color:#fff;
+}
+
+/* =========================
+   BACKGROUND
+========================= */
+
+#starsCanvas{
+    position:fixed;
+    inset:0;
+    width:100%;
+    height:100%;
+    z-index:0;
+}
+
+.background-glow{
+    position:fixed;
+    width:500px;
+    height:500px;
+    border-radius:50%;
+    background:radial-gradient(circle,rgba(255,190,80,.12),transparent 68%);
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    pointer-events:none;
+    z-index:1;
+}
+
+/* =========================
+   SCREENS
+========================= */
+
+.screen{
+    position:fixed;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:22px;
+    opacity:0;
+    visibility:hidden;
+    transition:opacity .7s ease,visibility .7s ease;
+    z-index:5;
+}
+
+.screen.active{
+    opacity:1;
+    visibility:visible;
+}
+
+.card{
+    width:min(440px,100%);
+    padding:32px 24px;
+    border:1px solid rgba(255,255,255,.1);
+    border-radius:28px;
+    background:rgba(12,16,34,.72);
+    backdrop-filter:blur(20px);
+    -webkit-backdrop-filter:blur(20px);
+    box-shadow:
+        0 25px 80px rgba(0,0,0,.45),
+        inset 0 1px rgba(255,255,255,.05);
+    text-align:center;
+}
+
+/* =========================
+   INTRO
+========================= */
+
+.intro-small{
+    color:#d8b36a;
+    font-size:13px;
+    letter-spacing:2px;
+    margin-bottom:14px;
+}
+
+.intro-title{
+    font-size:42px;
+    font-weight:700;
+    margin-bottom:10px;
+    background:linear-gradient(90deg,#fff,#f5d78d,#fff);
+    -webkit-background-clip:text;
+    color:transparent;
+}
+
+.intro-sub{
+    color:#b9bfd2;
+    font-size:15px;
+    line-height:2;
+    margin-bottom:28px;
+}
+
+.question{
+    font-size:17px;
+    margin-bottom:13px;
+}
+
+input{
+    width:100%;
+    height:56px;
+    border-radius:17px;
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+    color:white;
+    text-align:center;
+    font-family:inherit;
+    font-size:18px;
+    outline:none;
+    transition:.3s;
+}
+
+input:focus{
+    border-color:rgba(239,194,103,.7);
+    box-shadow:0 0 25px rgba(239,194,103,.08);
+}
+
+button{
+    font-family:inherit;
+    border:none;
+    cursor:pointer;
+}
+
+.main-btn{
+    width:100%;
+    height:56px;
+    margin-top:14px;
+    border-radius:17px;
+    background:linear-gradient(135deg,#f1c96c,#c8953e);
+    color:#17120a;
+    font-size:16px;
+    font-weight:700;
+    box-shadow:0 12px 35px rgba(205,153,60,.18);
+    transition:.25s;
+}
+
+.main-btn:active{
+    transform:scale(.97);
+}
+
+.error{
+    height:24px;
+    margin-top:10px;
+    color:#ff9d9d;
+    font-size:13px;
+}
+
+/* =========================
+   GAME INTRO
+========================= */
+
+.game-intro-icon{
+    width:86px;
+    height:86px;
+    margin:0 auto 22px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:42px;
+    background:radial-gradient(circle,#ffe8a3 0%,#e7a83c 38%,transparent 70%);
+    box-shadow:0 0 70px rgba(240,181,72,.25);
+}
+
+.game-title{
+    font-size:29px;
+    margin-bottom:12px;
+}
+
+.game-description{
+    color:#b9bfd2;
+    font-size:14px;
+    line-height:2;
+}
+
+.counter-preview{
+    margin:22px 0;
+    color:#e9c978;
+    font-size:14px;
+}
+
+/* =========================
+   GAME SCREEN
+========================= */
+
+#gameScreen{
+    padding:0;
+    display:block;
+}
+
+.game-ui{
+    position:absolute;
+    top:0;
+    left:0;
+    right:0;
+    padding:25px 20px;
+    z-index:20;
+    pointer-events:none;
+}
+
+.game-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.game-name{
+    font-size:14px;
+    color:#cbd0df;
+}
+
+.score{
+    padding:8px 15px;
+    border-radius:30px;
+    background:rgba(255,255,255,.06);
+    border:1px solid rgba(255,255,255,.08);
+    color:#f3d98f;
+    font-size:14px;
+}
+
+.game-message{
+    position:absolute;
+    top:100px;
+    left:50%;
+    transform:translateX(-50%);
+    width:90%;
+    text-align:center;
+    color:#d9dcea;
+    font-size:13px;
+    pointer-events:none;
+    transition:.4s;
+}
+
+#gameArea{
+    position:absolute;
+    inset:0;
+    overflow:hidden;
+}
+
+/* =========================
+   GAME STARS
+========================= */
+
+.game-star{
+    position:absolute;
+    width:48px;
+    height:48px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:22px;
+    cursor:pointer;
+    user-select:none;
+    animation:floatStar 3s ease-in-out infinite;
+    filter:drop-shadow(0 0 12px rgba(255,214,111,.7));
+    transition:transform .2s,opacity .3s;
+}
+
+.game-star::before{
+    content:"";
+    position:absolute;
+    inset:7px;
+    border-radius:50%;
+    background:radial-gradient(circle,rgba(255,240,185,.95),rgba(239,184,71,.45),transparent 70%);
+    z-index:-1;
+}
+
+.game-star:active{
+    transform:scale(1.4);
+}
+
+.special-star{
+    filter:drop-shadow(0 0 20px rgba(255,225,123,1));
+}
+
+@keyframes floatStar{
+    0%,100%{transform:translateY(0) rotate(0deg)}
+    50%{transform:translateY(-12px) rotate(8deg)}
+}
+
+/* particles */
+
+.particle{
+    position:absolute;
+    width:5px;
+    height:5px;
+    border-radius:50%;
+    background:#f7d98c;
+    pointer-events:none;
+    animation:particleOut .7s ease-out forwards;
+}
+
+@keyframes particleOut{
+    from{
+        opacity:1;
+        transform:translate(0,0) scale(1);
+    }
+    to{
+        opacity:0;
+        transform:translate(var(--x),var(--y)) scale(.1);
+    }
+}
+
+/* =========================
+   CONSTELLATION
+========================= */
+
+#constellationCanvas{
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    z-index:2;
+}
+
+.constellation-text{
+    position:absolute;
+    bottom:115px;
+    left:50%;
+    transform:translateX(-50%);
+    width:90%;
+    text-align:center;
+    color:#cdd1df;
+    font-size:13px;
+    opacity:0;
+    transition:.6s;
+}
+
+.constellation-text.show{
+    opacity:1;
+}
+
+/* =========================
+   PORTAL
+========================= */
+
+.portal{
+    position:absolute;
+    width:170px;
+    height:170px;
+    border-radius:50%;
+    left:50%;
+    top:50%;
+    transform:translate(-50%,-50%) scale(0);
+    background:radial-gradient(
+        circle,
+        #fff8d2 0%,
+        #f6d16f 12%,
+        #c58d34 25%,
+        rgba(197,141,52,.15) 48%,
+        transparent 70%
+    );
+    box-shadow:
+        0 0 40px rgba(247,204,105,.4),
+        0 0 100px rgba(247,204,105,.18);
+    opacity:0;
+    z-index:10;
+}
+
+.portal.open{
+    animation:portalOpen 2s ease forwards;
+}
+
+@keyframes portalOpen{
+    0%{
+        transform:translate(-50%,-50%) scale(0);
+        opacity:0;
+    }
+    50%{
+        transform:translate(-50%,-50%) scale(1.15);
+        opacity:1;
+    }
+    100%{
+        transform:translate(-50%,-50%) scale(1);
+        opacity:1;
+    }
+}
+
+.portal-ring{
+    position:absolute;
+    inset:-20px;
+    border:1px solid rgba(246,210,123,.5);
+    border-radius:50%;
+    animation:ringRotate 5s linear infinite;
+}
+
+.portal-ring:nth-child(2){
+    inset:-40px;
+    opacity:.4;
+    animation-duration:8s;
+}
+
+@keyframes ringRotate{
+    from{transform:rotate(0)}
+    to{transform:rotate(360deg)}
+}
+
+/* =========================
+   FINAL
+========================= */
+
+.final-card{
+    position:relative;
+    overflow:hidden;
+}
+
+.sun{
+    width:105px;
+    height:105px;
+    margin:0 auto 24px;
+    border-radius:50%;
+    background:radial-gradient(circle at 35% 30%,#fff9d8,#f6d579 35%,#d99b38 70%);
+    box-shadow:
+        0 0 30px rgba(246,205,110,.7),
+        0 0 90px rgba(246,205,110,.25);
+    animation:sunPulse 3s ease-in-out infinite;
+}
+
+@keyframes sunPulse{
+    0%,100%{
+        box-shadow:0 0 30px rgba(246,205,110,.7),0 0 90px rgba(246,205,110,.25);
+    }
+    50%{
+        box-shadow:0 0 45px rgba(246,205,110,.9),0 0 120px rgba(246,205,110,.35);
+    }
+}
+
+.final-date{
+    color:#e9c978;
+    font-size:14px;
+    letter-spacing:3px;
+    margin-bottom:10px;
+}
+
+.final-title{
+    font-size:34px;
+    margin-bottom:13px;
+}
+
+.final-text{
+    color:#c4c8d6;
+    line-height:2.1;
+    font-size:14px;
+}
+
+/* =========================
+   ENVELOPE
+========================= */
+
+.envelope-wrap{
+    margin-top:25px;
+    perspective:800px;
+}
+
+.envelope{
+    width:230px;
+    height:150px;
+    margin:auto;
+    position:relative;
+    cursor:pointer;
+    transform-style:preserve-3d;
+}
+
+.env-body{
+    position:absolute;
+    inset:0;
+    background:linear-gradient(135deg,#d5a64f,#9d6c25);
+    border-radius:8px;
+    box-shadow:0 15px 40px rgba(0,0,0,.3);
+}
+
+.env-flap{
+    position:absolute;
+    top:0;
+    left:0;
+    width:0;
+    height:0;
+    border-left:115px solid transparent;
+    border-right:115px solid transparent;
+    border-top:80px solid #edc66e;
+    transform-origin:top;
+    transition:1s ease;
+    z-index:3;
+}
+
+.envelope.open .env-flap{
+    transform:rotateX(180deg);
+}
+
+.letter{
+    position:absolute;
+    left:15px;
+    right:15px;
+    bottom:5px;
+    height:125px;
+    background:#fffaf0;
+    color:#29251d;
+    border-radius:5px;
+    padding:18px 12px;
+    font-size:12px;
+    line-height:1.8;
+    transform:translateY(0);
+    transition:1s ease;
+    z-index:2;
+}
+
+.envelope.open .letter{
+    transform:translateY(-75px);
+}
+
+.tap-letter{
+    margin-top:15px;
+    color:#999;
+    font-size:11px;
+}
+
+/* =========================
+   CONFETTI
+========================= */
+
+.confetti{
+    position:fixed;
+    width:7px;
+    height:12px;
+    top:-20px;
+    z-index:100;
+    animation:confettiFall linear forwards;
+}
+
+@keyframes confettiFall{
+    to{
+        transform:translateY(110vh) rotate(720deg);
+    }
+}
+
+/* =========================
+   TRANSITIONS
+========================= */
+
+.fade-out{
+    animation:fadeOut .8s ease forwards;
+}
+
+@keyframes fadeOut{
+    to{
+        opacity:0;
+        transform:scale(1.04);
+    }
+}
+
+.shake{
+    animation:shake .35s ease;
+}
+
+@keyframes shake{
+    25%{transform:translateX(7px)}
+    50%{transform:translateX(-7px)}
+    75%{transform:translateX(5px)}
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media(max-width:500px){
+
+    .card{
+        padding:28px 20px;
+        border-radius:25px;
+    }
+
+    .intro-title{
+        font-size:38px;
+    }
+
+    .game-title{
+        font-size:26px;
+    }
+
+    .game-star{
+        width:45px;
+        height:45px;
+    }
+
+    .final-title{
+        font-size:30px;
+    }
+
+    .envelope{
+        width:210px;
+        height:138px;
+    }
+
+    .env-flap{
+        border-left-width:105px;
+        border-right-width:105px;
+        border-top-width:74px;
+    }
+
+    .letter{
+        height:115px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="starsCanvas"></canvas>
+<div class="background-glow"></div>
+
+<!-- =========================
+     INTRO
+========================= -->
+
+<section id="introScreen" class="screen active">
+
+    <div class="card">
+
+        <div class="intro-small">مكان صغير لشخص واحد فقط</div>
+
+        <div class="intro-title">شمس ✨</div>
+
+        <div class="intro-sub">
+            قبل ما تدخلين لهذا المكان...
+            <br>
+            عندي سؤال صغير لازم تجاوبين عليه.
+        </div>
+
+        <div class="question">
+            شنو تاريخ ميلادي؟
+        </div>
+
+        <input
+            id="birthdayInput"
+            type="text"
+            inputmode="numeric"
+            placeholder="مثال: 05/09"
+            autocomplete="off"
+        >
+
+        <button class="main-btn" onclick="checkBirthday()">
+            دخول ✨
+        </button>
+
+        <div id="errorText" class="error"></div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     GAME INTRO
+========================= -->
+
+<section id="gameIntro" class="screen">
+
+    <div class="card">
+
+        <div class="game-intro-icon">☀️</div>
+
+        <div class="game-title">
+            رحلة النجوم إلى شمس
+        </div>
+
+        <div class="game-description">
+            وصلتِ للمكان الصحيح...
+            <br><br>
+            لكن المفاجأة مخبّية بين النجوم.
+            <br>
+            حتى توصلي إلها، عندج مهمة صغيرة.
+        </div>
+
+        <div class="counter-preview">
+            اجمعي 7 نجوم من السماء ⭐
+        </div>
+
+        <button class="main-btn" onclick="startGame()">
+            أبدأ الرحلة 🌙
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     GAME
+========================= -->
+
+<section id="gameScreen" class="screen">
+
+    <div class="game-ui">
+
+        <div class="game-top">
+
+            <div class="game-name">
+                رحلة شمس ✨
+            </div>
+
+            <div class="score">
+                <span id="score">0</span> / 7 ⭐
+            </div>
+
+        </div>
+
+        <div id="gameMessage" class="game-message">
+            النجوم تنتظرج...
+        </div>
+
+    </div>
+
+    <div id="gameArea"></div>
+
+    <canvas id="constellationCanvas"></canvas>
+
+    <div id="portal" class="portal">
+        <div class="portal-ring"></div>
+        <div class="portal-ring"></div>
+    </div>
+
+    <div id="constellationText" class="constellation-text">
+        اكتملت كوكبة شمس ✨
+    </div>
+
+</section>
+
+
+<!-- =========================
+     FINAL
+========================= -->
+
+<section id="finalScreen" class="screen">
+
+    <div class="card final-card">
+
+        <div class="sun"></div>
+
+        <div class="final-date">
+            25 / 09
+        </div>
+
+        <div class="final-title">
+            كل عام وانتي بخير شمس 🤍
+        </div>
+
+        <div class="final-text">
+
+            اليوم مو يوم عادي...
+            <br>
+            اليوم اليوم اللي انولدت بيه شمس.
+            <br><br>
+            أتمنى هالسنة تكون أخف على قلبج،
+            وأجمل من كل سنة راحت،
+            وتكون مليانة بأشياء تستحقينها.
+            <br><br>
+            وهذا الشي الصغير...
+            سويته خصيصًا إلج ✨
+
+        </div>
+
+        <div class="envelope-wrap">
+
+            <div id="envelope" class="envelope" onclick="openLetter()">
+
+                <div class="letter">
+                    إلى شمس 🤍
+                    <br>
+                    أتمنى تبقين دائمًا مثل اسمج...
+                    نور يخلّي الأشياء أجمل.
+                    <br>
+                    عيد ميلاد سعيد ✨
+                </div>
+
+                <div class="env-body"></div>
+                <div class="env-flap"></div>
+
+            </div>
+
+            <div class="tap-letter">
+                اضغطي على الظرف 💌
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<script>
+
+/* =====================================================
+   BACKGROUND STARS
+===================================================== */
+
+const starsCanvas = document.getElementById("starsCanvas");
+const starsCtx = starsCanvas.getContext("2d");
+
+let bgStars = [];
+
+function resizeCanvas(){
+
+    starsCanvas.width = window.innerWidth;
+    starsCanvas.height = window.innerHeight;
+
+}
+
+resizeCanvas();
+
+window.addEventListener("resize",resizeCanvas);
+
+function createBackgroundStars(){
+
+    bgStars=[];
+
+    const amount = Math.min(
+        150,
+        Math.floor(window.innerWidth * window.innerHeight / 6000)
+    );
+
+    for(let i=0;i<amount;i++){
+
+        bgStars.push({
+            x:Math.random()*window.innerWidth,
+            y:Math.random()*window.innerHeight,
+            r:Math.random()*1.5+.2,
+            a:Math.random()*.7+.2,
+            speed:Math.random()*.015+.003
+        });
+
+    }
+
+}
+
+createBackgroundStars();
+
+function animateBackground(){
+
+    starsCtx.clearRect(
+        0,
+        0,
+        starsCanvas.width,
+        starsCanvas.height
+    );
+
+    bgStars.forEach(s=>{
+
+        s.a += s.speed;
+
+        const alpha =
+            .25 +
+            Math.abs(Math.sin(s.a))*.55;
+
+        starsCtx.beginPath();
+
+        starsCtx.arc(
+            s.x,
+            s.y,
+            s.r,
+            0,
+            Math.PI*2
+        );
+
+        starsCtx.fillStyle =
+            `rgba(255,235,180,${alpha})`;
+
+        starsCtx.fill();
+
+    });
+
+    requestAnimationFrame(animateBackground);
+
+}
+
+animateBackground();
+
+
+/* =====================================================
+   SCREEN CONTROL
+===================================================== */
+
+function showScreen(id){
+
+    document.querySelectorAll(".screen")
+        .forEach(s=>s.classList.remove("active"));
+
+    document.getElementById(id)
+        .classList.add("active");
+
+}
+
+
+/* =====================================================
+   BIRTHDAY VERIFICATION
+===================================================== */
+
+function normalizeDate(value){
+
+    return value
+        .trim()
+        .replace(/-/g,"/")
+        .replace(/\s/g,"")
+        .replace(/^0(?=\d\/)/,"");
+
+}
+
+function checkBirthday(){
+
+    const input =
+        document.getElementById("birthdayInput");
+
+    const error =
+        document.getElementById("errorText");
+
+    const value =
+        normalizeDate(input.value);
+
+    const accepted = [
+        "05/09",
+        "5/09",
+        "05/9",
+        "5/9"
+    ];
+
+    if(accepted.includes(value)){
+
+        error.textContent="";
+
+        input.blur();
+
+        showScreen("gameIntro");
+
+    }else{
+
+        error.textContent =
+            "هممم... مو هذا التاريخ 😌 جربي مرة ثانية.";
+
+        input.classList.remove("shake");
+
+        void input.offsetWidth;
+
+        input.classList.add("shake");
+
+        if(navigator.vibrate){
+            navigator.vibrate(100);
+        }
+
+    }
+
+}
+
+document
+.getElementById("birthdayInput")
+.addEventListener("keydown",e=>{
+
+    if(e.key==="Enter"){
+        checkBirthday();
+    }
+
+});
+
+
+/* =====================================================
+   GAME
+===================================================== */
+
+let collected = 0;
+
+let starPositions = [];
+
+const gameArea =
+    document.getElementById("gameArea");
+
+const scoreElement =
+    document.getElementById("score");
+
+const gameMessage =
+    document.getElementById("gameMessage");
+
+const constellationText =
+    document.getElementById("constellationText");
+
+const constellationCanvas =
+    document.getElementById("constellationCanvas");
+
+const constellationCtx =
+    constellationCanvas.getContext("2d");
+
+
+function resizeConstellation(){
+
+    constellationCanvas.width =
+        window.innerWidth;
+
+    constellationCanvas.height =
+        window.innerHeight;
+
+}
+
+resizeConstellation();
+
+window.addEventListener(
+    "resize",
+    resizeConstellation
+);
+
+
+function startGame(){
+
+    collected=0;
+
+    starPositions=[];
+
+    scoreElement.textContent="0";
+
+    gameArea.innerHTML="";
+
+    constellationText.classList.remove("show");
+
+    document.getElementById("portal")
+        .classList.remove("open");
+
+    showScreen("gameScreen");
+
+    setTimeout(()=>{
+        createGameStars();
+    },300);
+
+}
+
+
+function createGameStars(){
+
+    const totalStars=7;
+
+    for(let i=0;i<totalStars;i++){
+
+        createStar(i);
+
+    }
+
+}
+
+
+function createStar(index){
+
+    const star =
+        document.createElement("div");
+
+    star.className="game-star";
+
+    star.innerHTML =
+        index===6 ? "✦" : "★";
+
+    if(index===6){
+        star.classList.add("special-star");
+    }
+
+    const margin=35;
+
+    const topSafe=145;
+
+    const bottomSafe=150;
+
+    const x =
+        margin +
+        Math.random() *
+        (window.innerWidth-margin*2-45);
+
+    const y =
+        topSafe +
+        Math.random() *
+        (
+            window.innerHeight
+            -topSafe
+            -bottomSafe
+            -45
+        );
+
+    star.style.left=x+"px";
+    star.style.top=y+"px";
+
+    star.style.animationDelay =
+        (Math.random()*1.5)+"s";
+
+    gameArea.appendChild(star);
+
+    starPositions.push({
+        x:x+24,
+        y:y+24
+    });
+
+    star.addEventListener(
+        "click",
+        ()=>collectStar(star,index)
+    );
+
+    star.addEventListener(
+        "touchstart",
+        e=>{
+            e.preventDefault();
+            collectStar(star,index);
+        },
+        {passive:false}
+    );
+
+}
+
+
+function collectStar(star,index){
+
+    if(star.dataset.collected==="true")
+        return;
+
+    star.dataset.collected="true";
+
+    const rect =
+        star.getBoundingClientRect();
+
+    createParticles(
+        rect.left+rect.width/2,
+        rect.top+rect.height/2
+    );
+
+    star.style.opacity="0";
+    star.style.transform="scale(2)";
+
+    setTimeout(()=>{
+        star.remove();
+    },300);
+
+    collected++;
+
+    scoreElement.textContent=collected;
+
+    if(navigator.vibrate){
+        navigator.vibrate(25);
+    }
+
+    updateMessage();
+
+    drawConstellation();
+
+    if(collected===7){
+
+        finishGame();
+
+    }
+
+}
+
+
+function updateMessage(){
+
+    const messages=[
+
+        "بداية حلوة... ✨",
+
+        "نجمة ثانية صارت إلج 🤍",
+
+        "السماء بدأت تضيء...",
+
+        "قربنا نوصل للمفاجأة 🌙",
+
+        "شمس... بقي القليل ✨",
+
+        "النجوم كلها تقريبًا صارت تعرف طريقج...",
+
+        "آخر نجمة... وبعدها المفاجأة ☀️"
+
+    ];
+
+    gameMessage.textContent =
+        messages[Math.min(collected,messages.length-1)];
+
+}
+
+
+function createParticles(x,y){
+
+    for(let i=0;i<12;i++){
+
+        const p =
+            document.createElement("div");
+
+        p.className="particle";
+
+        p.style.left=x+"px";
+        p.style.top=y+"px";
+
+        p.style.setProperty(
+            "--x",
+            (Math.random()*100-50)+"px"
+        );
+
+        p.style.setProperty(
+            "--y",
+            (Math.random()*100-50)+"px"
+        );
+
+        document.body.appendChild(p);
+
+        setTimeout(()=>{
+            p.remove();
+        },700);
+
+    }
+
+}
+
+
+/* =====================================================
+   CONSTELLATION
+===================================================== */
+
+function drawConstellation(){
+
+    constellationCtx.clearRect(
+        0,
+        0,
+        constellationCanvas.width,
+        constellationCanvas.height
+    );
+
+    if(starPositions.length<2)
+        return;
+
+    constellationCtx.beginPath();
+
+    for(let i=0;i<starPositions.length;i++){
+
+        const p=starPositions[i];
+
+        if(i===0){
+            constellationCtx.moveTo(p.x,p.y);
+        }else{
+            constellationCtx.lineTo(p.x,p.y);
+        }
+
+    }
+
+    constellationCtx.strokeStyle =
+        "rgba(238,202,112,.35)";
+
+    constellationCtx.lineWidth=1;
+
+    constellationCtx.stroke();
+
+}
+
+
+function finishGame(){
+
+    gameMessage.textContent =
+        "اكتملت كوكبة شمس... ☀️";
+
+    constellationText.classList.add("show");
+
+    const portal =
+        document.getElementById("portal");
+
+    setTimeout(()=>{
+
+        portal.classList.add("open");
+
+        if(navigator.vibrate){
+            navigator.vibrate([
+                30,50,30,50,80
+            ]);
+        }
+
+    },500);
+
+    setTimeout(()=>{
+
+        createConfetti();
+
+    },1800);
+
+    setTimeout(()=>{
+
+        showScreen("finalScreen");
+
+    },3000);
+
+}
+
+
+/* =====================================================
+   ENVELOPE
+===================================================== */
+
+function openLetter(){
+
+    const envelope =
+        document.getElementById("envelope");
+
+    envelope.classList.toggle("open");
+
+    if(navigator.vibrate){
+        navigator.vibrate(35);
+    }
+
+}
+
+
+/* =====================================================
+   CONFETTI
+===================================================== */
+
+function createConfetti(){
+
+    for(let i=0;i<70;i++){
+
+        const c =
+            document.createElement("div");
+
+        c.className="confetti";
+
+        c.style.left =
+            Math.random()*100+"vw";
+
+        c.style.animationDuration =
+            (2+Math.random()*3)+"s";
+
+        c.style.animationDelay =
+            Math.random()+"s";
+
+        c.style.background =
+            [
+                "#f5d77e",
+                "#ffffff",
+                "#d7b35f",
+                "#b8c3d9"
+            ][
+                Math.floor(Math.random()*4)
+            ];
+
+        document.body.appendChild(c);
+
+        setTimeout(()=>{
+            c.remove();
+        },6000);
+
+    }
+
+}
+
+</script>
+
+</body>
+</html>
